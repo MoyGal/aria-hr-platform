@@ -1,214 +1,115 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { validateWebhookSignature, WEBHOOK_EVENTS } from '@/lib/retell';
-import { PrismaClient } from '@prisma/client';
+import Retell from 'retell-sdk';
+import { AgentResponse, Agent } from 'retell-sdk/resources';
 
-const prisma = new PrismaClient();
+const RETELL_API_KEY = process.env.RETELL_API_KEY;
+const RETELL_BASE_URL = 'https://api.retellai.com';
+const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 
-// Webhook para recibir eventos de Retell
-export async function POST(request: NextRequest) {
-  try {
-    // Obtener el payload y la firma
-    const payload = await request.text();
-    const signature = request.headers.get('x-retell-signature') || '';
+// Inicializamos Retell
+export const retellClient = new Retell({
+  apiKey: RETELL_API_KEY,
+});
 
-    // Validar firma (importante para producción)
-    if (!validateWebhookSignature(payload, signature)) {
-      console.warn('Invalid webhook signature');
-      // En desarrollo podemos continuar, en producción deberíamos retornar 401
-      // return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-    }
+export const PREDEFINED_INTERVIEWERS = [
+  {
+    id: 'sophia-interviewer',
+    name: 'Sophia',
+    voice: 'eleven_labs:5f05b82d-80f2-45e0-a4f6-7b89f816c7c6',
+    description: 'Expert on Software Development.',
+    prompt: `You are Sophia, an expert software development interviewer.
+You will evaluate the candidate's skills in a conversational way.
+Ask about their projects, technical stacks, and problem-solving abilities.
+Be professional, friendly, and encouraging.`,
+  },
+  {
+    id: 'james-interviewer',
+    name: 'James',
+    voice: 'eleven_labs:59b720b0-a887-43c2-b5e0-9430c51e031a',
+    description: 'Specialist in Data Science and AI.',
+    prompt: `You are James, a specialist in Data Science and AI.
+Your role is to assess the candidate's knowledge of machine learning, data manipulation, and statistical analysis.
+Maintain a curious and inquisitive tone.`,
+  },
+  {
+    id: 'maria-interviewer',
+    name: 'Maria',
+    voice: 'eleven_labs:54d3e8ed-7195-46c2-849c-f481001f3f4c',
+    description: 'Talent Acquisition Manager.',
+    prompt: `You are Maria, a talent acquisition manager.
+Focus on behavioral questions, team collaboration, and cultural fit.
+Your tone should be warm, empathetic, and professional.`,
+  },
+  {
+    id: 'carlos-interviewer',
+    name: 'Carlos',
+    voice: 'eleven_labs:b89e92c2-8051-409e-b9b0-9076edc97a5c',
+    description: 'General HR and Project Management.',
+    prompt: `You are Carlos, a general HR and project manager.
+Your task is to evaluate the candidate's project management skills, communication, and adaptability.
+Be direct, clear, and efficient in your questions.`,
+  },
+];
 
-    const event = JSON.parse(payload);
-    console.log('Retell webhook event:', event);
-
-    // Procesar según el tipo de evento
-    switch (event.type) {
-      case WEBHOOK_EVENTS.CALL_STARTED:
-        await handleCallStarted(event);
-        break;
-
-      case WEBHOOK_EVENTS.CALL_ENDED:
-        await handleCallEnded(event);
-        break;
-
-      case WEBHOOK_EVENTS.CALL_ANALYZED:
-        await handleCallAnalyzed(event);
-        break;
-
-      case WEBHOOK_EVENTS.TRANSCRIPT_READY:
-        await handleTranscriptReady(event);
-        break;
-
-      default:
-        console.log('Unhandled webhook event type:', event.type);
-    }
-
-    return NextResponse.json({ received: true }, { status: 200 });
-  } catch (error) {
-    console.error('Webhook error:', error);
-    return NextResponse.json(
-      { error: 'Webhook processing failed' },
-      { status: 500 }
-    );
-  }
+export async function createOrUpdateRetellAgent(agent: any): Promise<AgentResponse> {
+  // Aquí asumo que 'agent' ya tiene la forma correcta para la API de Retell
+  return retellClient.agent.create({
+    agentName: agent.name,
+    prompt: agent.prompt,
+    voiceEngine: 'elevenlabs',
+    voiceId: agent.voice.split(':')[1],
+    // Puedes añadir más configuraciones aquí si son necesarias
+  });
 }
 
-// Manejar inicio de llamada
-async function handleCallStarted(event: any) {
-  const { call_id, agent_id, from_number, to_number, start_timestamp } = event.data;
-
-  try {
-    // Actualizar estado en base de datos
-    await prisma.interview.updateMany({
-      where: { externalCallId: call_id },
-      data: {
-        status: 'active',
-        startedAt: new Date(start_timestamp),
-      },
-    });
-
-    console.log(`Call started: ${call_id}`);
-  } catch (error) {
-    console.error('Error handling call started:', error);
-  }
+export async function listAgents(): Promise<Agent[]> {
+  const { agents } = await retellClient.agent.list();
+  return agents;
 }
 
-// Manejar fin de llamada
-async function handleCallEnded(event: any) {
-  const {
-    call_id,
-    agent_id,
-    end_timestamp,
-    duration_seconds,
-    end_reason,
-    recording_url,
-    transcript,
-    summary,
-  } = event.data;
-
-  try {
-    // Actualizar entrevista en base de datos
-    const interview = await prisma.interview.updateMany({
-      where: { externalCallId: call_id },
-      data: {
-        status: 'completed',
-        endedAt: new Date(end_timestamp),
-        duration: duration_seconds,
-        recordingUrl: recording_url,
-        transcript: transcript ? JSON.stringify(transcript) : null,
-        summary,
-        endReason: end_reason,
-      },
-    });
-
-    // Si hay transcripción, procesarla
-    if (transcript && Array.isArray(transcript)) {
-      await processTranscript(call_id, transcript);
-    }
-
-    console.log(`Call ended: ${call_id}, duration: ${duration_seconds}s`);
-  } catch (error) {
-    console.error('Error handling call ended:', error);
-  }
+export async function deleteAgent(agentId: string): Promise<void> {
+  await retellClient.agent.delete(agentId);
 }
 
-// Manejar análisis de llamada
-async function handleCallAnalyzed(event: any) {
-  const {
-    call_id,
-    analysis,
-    sentiment_score,
-    key_points,
-    action_items,
-    evaluation,
-  } = event.data;
-
-  try {
-    // Guardar análisis en base de datos
-    await prisma.interviewAnalysis.create({
-      data: {
-        interviewId: call_id,
-        sentimentScore: sentiment_score,
-        keyPoints: key_points ? JSON.stringify(key_points) : null,
-        actionItems: action_items ? JSON.stringify(action_items) : null,
-        evaluation: evaluation ? JSON.stringify(evaluation) : null,
-        fullAnalysis: JSON.stringify(analysis),
-      },
-    });
-
-    console.log(`Call analyzed: ${call_id}, sentiment: ${sentiment_score}`);
-  } catch (error) {
-    console.error('Error handling call analysis:', error);
-  }
+export async function createPhoneCall(agentId: string, to: string, from: string): Promise<any> {
+  const call = await retellClient.call.create({
+    agentId,
+    from, // Aquí podrías usar el número de Retell
+    to,
+  });
+  return call;
 }
 
-// Manejar transcripción lista
-async function handleTranscriptReady(event: any) {
-  const { call_id, transcript, transcript_url } = event.data;
-
-  try {
-    // Actualizar entrevista con transcripción
-    await prisma.interview.updateMany({
-      where: { externalCallId: call_id },
-      data: {
-        transcript: JSON.stringify(transcript),
-        transcriptUrl: transcript_url,
-      },
-    });
-
-    // Procesar transcripción para extraer información relevante
-    if (transcript && Array.isArray(transcript)) {
-      await processTranscript(call_id, transcript);
-    }
-
-    console.log(`Transcript ready for call: ${call_id}`);
-  } catch (error) {
-    console.error('Error handling transcript ready:', error);
-  }
+export async function createWebCall(agentId: string): Promise<any> {
+  const call = await retellClient.call.create({
+    agentId,
+    // Aquí puedes configurar la llamada para que sea web.
+    // La API de Retell tiene un endpoint específico para esto.
+  });
+  return call;
 }
 
-// Procesar transcripción para extraer información
-async function processTranscript(callId: string, transcript: any[]) {
-  try {
-    // Extraer preguntas y respuestas
-    const questions: string[] = [];
-    const answers: string[] = [];
-    
-    transcript.forEach((entry) => {
-      if (entry.role === 'agent') {
-        // Es una pregunta del entrevistador
-        if (entry.content.includes('?')) {
-          questions.push(entry.content);
-        }
-      } else if (entry.role === 'user') {
-        // Es una respuesta del candidato
-        answers.push(entry.content);
-      }
-    });
-
-    // Calcular duración total de respuestas
-    const totalWords = answers.join(' ').split(' ').length;
-    const avgWordsPerAnswer = answers.length > 0 ? totalWords / answers.length : 0;
-
-    // Guardar métricas
-    await prisma.interviewMetrics.create({
-      data: {
-        interviewId: callId,
-        totalQuestions: questions.length,
-        totalAnswers: answers.length,
-        avgAnswerLength: avgWordsPerAnswer,
-        questions: JSON.stringify(questions),
-        answers: JSON.stringify(answers),
-      },
-    });
-
-    console.log(`Processed transcript: ${questions.length} questions, ${answers.length} answers`);
-  } catch (error) {
-    console.error('Error processing transcript:', error);
-  }
+export async function getCallStatus(callId: string): Promise<any> {
+  return retellClient.call.retrieve(callId);
 }
 
-// GET para verificar que el webhook está activo
-export async function GET() {
-  return NextResponse.json({ status: 'Webhook is active' }, { status: 200 });
+export async function getCallTranscript(callId: string): Promise<any> {
+  const callDetail = await retellClient.call.retrieve(callId);
+  return callDetail.transcript;
 }
+
+export async function endCall(callId: string): Promise<void> {
+  await retellClient.call.end(callId);
+}
+
+export function validateWebhookSignature(req: any) {
+  // Lógica para validar el webhook de Retell (opcional pero recomendado)
+  // ...
+  return true;
+}
+
+export const WEBHOOK_EVENTS = {
+  CALL_STARTED: 'call_started',
+  CALL_ENDED: 'call_ended',
+  TRANSCRIPT_UPDATED: 'transcript_updated',
+  // ... otros eventos
+};

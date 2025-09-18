@@ -4,8 +4,8 @@ import {
   createOrUpdateRetellAgent,
   createPhoneCall,
   createWebCall,
-  getCallStatus,
   endCall,
+  getCallStatus,
   getCallTranscript,
   listAgents,
   deleteAgent,
@@ -18,7 +18,6 @@ const prisma = new PrismaClient();
 // GET - Obtener agentes disponibles
 export async function GET(request: NextRequest) {
   try {
-    // Usar await para obtener userId
     const session = await auth();
     const userId = session?.userId;
     
@@ -31,6 +30,7 @@ export async function GET(request: NextRequest) {
 
     // Obtener agentes predefinidos
     if (action === 'predefined') {
+      // Devolver solo los agentes predefinidos sin llamar a la API de Retell
       return NextResponse.json({ agents: PREDEFINED_INTERVIEWERS });
     }
 
@@ -67,7 +67,6 @@ export async function GET(request: NextRequest) {
 // POST - Crear agente o iniciar llamada
 export async function POST(request: NextRequest) {
   try {
-    // Usar await para obtener userId
     const session = await auth();
     const userId = session?.userId;
     
@@ -94,24 +93,23 @@ export async function POST(request: NextRequest) {
 
       const agent = await createOrUpdateRetellAgent(interviewer);
       
-      // Guardar en base de datos
       const savedAgent = await prisma.interviewer.upsert({
         where: { externalId: agent.agent_id },
         update: {
           name: interviewer.name,
           language: interviewer.language,
-          voiceId: interviewer.voice_id,
+          voiceId: interviewer.voice.split(':')[1],
           description: interviewer.description,
         },
         create: {
           externalId: agent.agent_id,
           name: interviewer.name,
           language: interviewer.language,
-          voiceId: interviewer.voice_id,
+          voiceId: interviewer.voice.split(':')[1],
           voiceProvider: 'elevenlabs',
           description: interviewer.description,
-          personality: interviewer.personality,
-          instructions: interviewer.instructions,
+          personality: interviewer.prompt,
+          instructions: interviewer.prompt,
           userId,
         },
       });
@@ -121,23 +119,22 @@ export async function POST(request: NextRequest) {
 
     // Iniciar llamada telefónica
     if (action === 'start-phone-call') {
-      const { agentId, toNumber, fromNumber } = body;
+      const { agentId, phoneNumber } = body;
       
-      if (!agentId || !toNumber) {
+      if (!agentId || !phoneNumber) {
         return NextResponse.json(
           { error: 'Missing required fields' },
           { status: 400 }
         );
       }
 
-      const phoneCall = await createPhoneCall(agentId, toNumber, fromNumber);
+      const phoneCall = await createPhoneCall(agentId, phoneNumber, process.env.RETELL_PHONE_NUMBER);
       
-      // Guardar llamada en base de datos
       const savedCall = await prisma.interview.create({
         data: {
           externalCallId: phoneCall.call_id,
           interviewerId: agentId,
-          candidatePhone: toNumber,
+          candidatePhone: phoneNumber,
           status: 'in_progress',
           startedAt: new Date(),
           userId,
@@ -147,7 +144,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ phoneCall, savedCall });
     }
 
-    // Iniciar llamada web (para pruebas)
+    // Iniciar llamada web
     if (action === 'start-web-call') {
       const { agentId } = body;
       
@@ -160,7 +157,6 @@ export async function POST(request: NextRequest) {
 
       const webCall = await createWebCall(agentId);
       
-      // Guardar llamada en base de datos
       const savedCall = await prisma.interview.create({
         data: {
           externalCallId: webCall.call_id,
@@ -188,7 +184,6 @@ export async function POST(request: NextRequest) {
 
       await endCall(callId);
       
-      // Actualizar en base de datos
       await prisma.interview.updateMany({
         where: { externalCallId: callId },
         data: {
@@ -213,7 +208,6 @@ export async function POST(request: NextRequest) {
 // DELETE - Eliminar agente
 export async function DELETE(request: NextRequest) {
   try {
-    // Usar await para obtener userId
     const session = await auth();
     const userId = session?.userId;
     
@@ -233,7 +227,6 @@ export async function DELETE(request: NextRequest) {
 
     await deleteAgent(agentId);
     
-    // Eliminar de base de datos
     await prisma.interviewer.deleteMany({
       where: { externalId: agentId },
     });

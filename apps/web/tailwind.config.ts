@@ -1,18 +1,19 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+// Corrected tailwind.config.ts
+import type { Config } from "tailwindcss"
+
+const config = {
+  // Change this line:
+  // darkMode: ["class"],
+  // To this line:
+  darkMode: ["class", "dark"], // Or just "class"
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    // ...
   ],
+  prefix: "",
   theme: {
-    extend: {
-      colors: {
-        primary: '#ff006e',
-        secondary: '#ff8800',
-        accent: '#10b981',
-      }
-    },
+    // ...
   },
-  plugins: [],
-}
+  plugins: [require("tailwindcss-animate")],
+} satisfies Config
+
+export default config;
