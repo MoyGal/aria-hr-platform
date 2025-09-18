@@ -18,7 +18,10 @@ const prisma = new PrismaClient();
 // GET - Obtener agentes disponibles
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = auth();
+    // Usar await para obtener userId
+    const session = await auth();
+    const userId = session?.userId;
+    
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -64,7 +67,10 @@ export async function GET(request: NextRequest) {
 // POST - Crear agente o iniciar llamada
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = auth();
+    // Usar await para obtener userId
+    const session = await auth();
+    const userId = session?.userId;
+    
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -207,7 +213,10 @@ export async function POST(request: NextRequest) {
 // DELETE - Eliminar agente
 export async function DELETE(request: NextRequest) {
   try {
-    const { userId } = auth();
+    // Usar await para obtener userId
+    const session = await auth();
+    const userId = session?.userId;
+    
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
