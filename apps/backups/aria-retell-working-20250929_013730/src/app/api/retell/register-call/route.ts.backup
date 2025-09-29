@@ -1,0 +1,32 @@
+import { NextResponse } from 'next/server';
+// Usamos el SDK de servidor con importación por defecto
+import RetellClient from 'retell-sdk';
+
+const retellClient = new RetellClient({
+  apiKey: process.env.RETELL_API_KEY!,
+});
+
+export async function POST(req: Request) {
+  try {
+    const { agentId } = await req.json();
+    if (!agentId) {
+      return NextResponse.json({ error: 'Agent ID is required' }, { status: 400 });
+    }
+
+    // ✅ USAMOS LA SINTAXIS MÁS ESTÁNDAR PARA EL SDK DE RETELL
+    const call = await retellClient.call.register({ 
+        agentId: agentId,
+        audioEncoding: 's16le',
+        audioWebsocketProtocol: 'web',
+        sampleRate: 24000,
+      });
+
+    return NextResponse.json({
+      callId: call.callDetail?.callId
+    });
+
+  } catch (error) {
+    console.error("Error registering call with Retell:", error);
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Failed to register call' }, { status: 500 });
+  }
+}

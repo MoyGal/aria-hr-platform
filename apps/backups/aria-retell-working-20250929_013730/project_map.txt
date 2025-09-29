@@ -1,0 +1,187 @@
+./.clerk/.tmp/keyless.json
+./.clerk/.tmp/README.md
+./.clerk/.tmp/telemetry.json
+./tsconfig.backup.1757954223.json
+./.env.local
+./node_modules/@types/three/README.md
+./node_modules/@types/three/package.json
+./node_modules/@types/three/examples/jsm/misc/GPUComputationRenderer.d.ts
+./node_modules/@types/three/examples/jsm/misc/Volume.d.ts
+./node_modules/@types/three/examples/jsm/misc/ConvexObjectBreaker.d.ts
+./node_modules/@types/three/examples/jsm/misc/MD2Character.d.ts
+./node_modules/@types/three/examples/jsm/misc/MorphAnimMesh.d.ts
+./node_modules/@types/three/examples/jsm/misc/VolumeSlice.d.ts
+./node_modules/@types/three/examples/jsm/misc/RollerCoaster.d.ts
+./node_modules/@types/three/examples/jsm/misc/MorphBlendMesh.d.ts
+./node_modules/@types/three/examples/jsm/misc/Gyroscope.d.ts
+./node_modules/@types/three/examples/jsm/misc/Timer.d.ts
+./node_modules/@types/three/examples/jsm/misc/ProgressiveLightMap.d.ts
+./node_modules/@types/three/examples/jsm/misc/MD2CharacterComplex.d.ts
+./node_modules/@types/three/examples/jsm/misc/TubePainter.d.ts
+./node_modules/@types/three/examples/jsm/renderers/CSS2DRenderer.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgpu/WebGPUBackend.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgpu/WebGPURenderer.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgl/WebGLBackend.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgl/nodes/WebGLNodeBuilder.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgl/nodes/SlotNode.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgl/nodes/WebGLNodes.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Constants.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/ComputePipeline.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Geometries.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/ChainMap.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/DataMap.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Bindings.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/StorageInstancedBufferAttribute.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/UniformsGroup.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Binding.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Buffer.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Background.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/nodes/NodeUniform.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/nodes/NodeUniformsGroup.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/nodes/NodeBuilderState.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/nodes/Nodes.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/RenderBundle.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/UniformBuffer.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/BufferUtils.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/RenderLists.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Renderer.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Color4.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/PostProcessing.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Pipelines.d.ts
+--- DIRECTORIOS PRINCIPALES ---
+total 640
+drwxr-xr-x@ 34 moygal  staff    1088 Sep 29 00:48 .
+drwxr-xr-x@  3 moygal  staff      96 Sep 14 01:28 ..
+drwxr-xr-x@  3 moygal  staff      96 Sep 14 01:51 .clerk
+-rw-r--r--@  1 moygal  staff      36 Sep 28 23:58 .env
+-rw-r--r--@  1 moygal  staff    4165 Sep 29 00:00 .env.local
+-rw-r--r--@  1 moygal  staff     156 Sep 25 20:01 .eslintrc.json
+-rw-r--r--@  1 moygal  staff     534 Sep 14 01:51 .gitignore
+drwxr-xr-x@  2 moygal  staff      64 Sep 22 00:54 Crear
+-rw-r--r--@  1 moygal  staff    1450 Sep 14 01:28 README.md
+drwxr-xr-x@  3 moygal  staff      96 Sep 21 16:29 apps
+-rw-r--r--@  1 moygal  staff   17416 Sep 14 23:19 aria-code.zip
+drwxr-xr-x@  2 moygal  staff      64 Sep 22 00:54 carpetas
+-rw-r--r--@  1 moygal  staff     466 Sep 28 21:19 components.json
+-rw-r--r--@  1 moygal  staff       0 Sep 25 09:31 errors.txt
+-rw-r--r--@  1 moygal  staff     524 Sep 14 01:28 eslint.config.mjs
+-rw-r--r--@  1 moygal  staff    2952 Sep 28 19:28 estructura.txt
+drwxr-xr-x@  2 moygal  staff      64 Sep 22 00:54 existen
+-rw-r--r--@  1 moygal  staff    1452 Sep 19 16:23 firebase-debug.log
+drwxr-xr-x@  2 moygal  staff      64 Sep 27 23:08 migrations
+-rw-r--r--@  1 moygal  staff     228 Sep 28 20:26 next-env.d.ts
+-rw-r--r--@  1 moygal  staff     133 Sep 22 23:38 next.config.ts.bak
+drwxr-xr-x@  2 moygal  staff      64 Sep 22 00:54 no
+drwxr-xr-x@ 52 moygal  staff    1664 Sep 28 21:19 node_modules
+-rw-r--r--@  1 moygal  staff     860 Sep 28 22:18 package.json
+-rw-r--r--@  1 moygal  staff      82 Sep 28 20:18 postcss.config.js
+drwxr-xr-x@  6 moygal  staff     192 Sep 28 11:39 prisma
+-rw-r--r--@  1 moygal  staff    3381 Sep 29 00:48 project_map.txt
+drwxr-xr-x@  7 moygal  staff     224 Sep 14 01:28 public
+drwxr-xr-x@  2 moygal  staff      64 Sep 22 00:54 si
+drwxr-xr-x@  6 moygal  staff     192 Sep 28 12:26 src
+-rw-r--r--@  1 moygal  staff    1664 Sep 28 21:19 tailwind.config.ts
+-rw-r--r--@  1 moygal  staff     561 Sep 15 19:33 tsconfig.backup.1757954223.json
+-rw-r--r--@  1 moygal  staff     614 Sep 22 16:39 tsconfig.json
+-rw-r--r--@  1 moygal  staff  232430 Sep 25 09:31 tsconfig.tsbuildinfo
+--- ESTRUCTURA COMPLETA (primeros 100 archivos) ---
+./firebase-debug.log
+./.clerk/.tmp/keyless.json
+./.clerk/.tmp/README.md
+./.clerk/.tmp/telemetry.json
+./tsconfig.backup.1757954223.json
+./.env.local
+./errors.txt
+./tsconfig.tsbuildinfo
+./node_modules/@types/three/LICENSE
+./node_modules/@types/three/README.md
+./node_modules/@types/three/package.json
+./node_modules/@types/three/examples/jsm/misc/GPUComputationRenderer.d.ts
+./node_modules/@types/three/examples/jsm/misc/Volume.d.ts
+./node_modules/@types/three/examples/jsm/misc/ConvexObjectBreaker.d.ts
+./node_modules/@types/three/examples/jsm/misc/MD2Character.d.ts
+./node_modules/@types/three/examples/jsm/misc/MorphAnimMesh.d.ts
+./node_modules/@types/three/examples/jsm/misc/VolumeSlice.d.ts
+./node_modules/@types/three/examples/jsm/misc/RollerCoaster.d.ts
+./node_modules/@types/three/examples/jsm/misc/MorphBlendMesh.d.ts
+./node_modules/@types/three/examples/jsm/misc/Gyroscope.d.ts
+./node_modules/@types/three/examples/jsm/misc/Timer.d.ts
+./node_modules/@types/three/examples/jsm/misc/ProgressiveLightMap.d.ts
+./node_modules/@types/three/examples/jsm/misc/MD2CharacterComplex.d.ts
+./node_modules/@types/three/examples/jsm/misc/TubePainter.d.ts
+./node_modules/@types/three/examples/jsm/renderers/CSS2DRenderer.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgpu/WebGPUBackend.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgpu/WebGPURenderer.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgl/WebGLBackend.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgl/nodes/WebGLNodeBuilder.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgl/nodes/SlotNode.d.ts
+./node_modules/@types/three/examples/jsm/renderers/webgl/nodes/WebGLNodes.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Constants.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/ComputePipeline.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Geometries.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/ChainMap.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/DataMap.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Bindings.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/StorageInstancedBufferAttribute.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/UniformsGroup.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Binding.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Buffer.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Background.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/nodes/NodeUniform.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/nodes/NodeUniformsGroup.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/nodes/NodeBuilderState.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/nodes/Nodes.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/RenderBundle.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/UniformBuffer.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/BufferUtils.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/RenderLists.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Renderer.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Color4.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/PostProcessing.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Pipelines.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Animation.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/StorageTexture.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/ProgrammableStage.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/RenderPipeline.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/ClippingContext.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/RenderBundles.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Uniform.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/RenderObjects.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/CubeRenderTarget.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/StorageBufferAttribute.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Info.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/RenderObject.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/RenderContext.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Textures.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/RenderContexts.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Backend.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Pipeline.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/RenderList.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/Attributes.d.ts
+./node_modules/@types/three/examples/jsm/renderers/common/extras/PMREMGenerator.d.ts
+./node_modules/@types/three/examples/jsm/renderers/SVGRenderer.d.ts
+./node_modules/@types/three/examples/jsm/renderers/Projector.d.ts
+./node_modules/@types/three/examples/jsm/renderers/CSS3DRenderer.d.ts
+./node_modules/@types/three/examples/jsm/transpiler/TSLEncoder.d.ts
+./node_modules/@types/three/examples/jsm/transpiler/Transpiler.d.ts
+./node_modules/@types/three/examples/jsm/transpiler/ShaderToyDecoder.d.ts
+./node_modules/@types/three/examples/jsm/transpiler/GLSLDecoder.d.ts
+./node_modules/@types/three/examples/jsm/transpiler/AST.d.ts
+./node_modules/@types/three/examples/jsm/textures/FlakesTexture.d.ts
+./node_modules/@types/three/examples/jsm/modifiers/EdgeSplitModifier.d.ts
+./node_modules/@types/three/examples/jsm/modifiers/CurveModifier.d.ts
+./node_modules/@types/three/examples/jsm/modifiers/TessellateModifier.d.ts
+./node_modules/@types/three/examples/jsm/modifiers/SimplifyModifier.d.ts
+./node_modules/@types/three/examples/jsm/materials/MeshGouraudMaterial.d.ts
+./node_modules/@types/three/examples/jsm/materials/MeshPostProcessingMaterial.d.ts
+./node_modules/@types/three/examples/jsm/Addons.d.ts
+./node_modules/@types/three/examples/jsm/capabilities/WebGPU.d.ts
+./node_modules/@types/three/examples/jsm/capabilities/WebGL.d.ts
+./node_modules/@types/three/examples/jsm/nodes/gpgpu/ComputeNode.d.ts
+./node_modules/@types/three/examples/jsm/nodes/materials/MeshPhongNodeMaterial.d.ts
+./node_modules/@types/three/examples/jsm/nodes/materials/MeshToonNodeMaterial.d.ts
+./node_modules/@types/three/examples/jsm/nodes/materials/MeshNormalNodeMaterial.d.ts
+./node_modules/@types/three/examples/jsm/nodes/materials/MeshMatcapNodeMaterial.d.ts
+./node_modules/@types/three/examples/jsm/nodes/materials/ShadowNodeMaterial.d.ts
+./node_modules/@types/three/examples/jsm/nodes/materials/NodeMaterial.d.ts
+./node_modules/@types/three/examples/jsm/nodes/materials/MeshSSSNodeMaterial.d.ts

@@ -1,20 +1,20 @@
 {
-    "name": "@aria/platform",
-    "version": "1.0.0",
-    "private": true,
-    "workspaces": [
-      "apps/*",
-      "packages/*"
-    ],
-    "scripts": {
-      "dev": "npm run dev --workspace=apps/web",
-      "build": "npm run build --workspace=apps/web",
-      "clean": "rm -rf node_modules"
-    },
-    "devDependencies": {
-      "typescript": "^5.3.0",
-      "@types/node": "^20.10.0"
-    },
-    "packageManager": "npm@10.2.4"
-  }
-  
+  "name": "@aria/platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=apps/web",
+    "clean": "rimraf node_modules ./**/node_modules ./**/.next"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.10.0",
+    "rimraf": "^5.0.0"
+  },
+  "packageManager": "npm@10.2.4"
+}
