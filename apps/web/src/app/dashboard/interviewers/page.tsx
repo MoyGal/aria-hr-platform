@@ -1,13 +1,10 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-
-// Importar el componente dinámicamente para evitar problemas de SSR
-const InterviewerSelector = dynamic(
-  () => import('./InterviewerSelector'),
-  { ssr: false }
-);
-
 export default function InterviewersPage() {
-  return <InterviewerSelector />;
+  return (
+    <div className="p-8 text-white">
+      <h1 className="text-2xl">AI Interviewers</h1>
+      <p>This page is under construction.</p>
+    </div>
+  );
 }

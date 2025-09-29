@@ -1,9 +1,8 @@
-// src/app/dashboard/layout.tsx
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { UserButton } from '@clerk/nextjs';
 import { Sparkles } from 'lucide-react';
+import UserProfile from '@/components/user-profile'; // <-- NUESTRO NUEVO COMPONENTE
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -19,16 +18,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#ff006e]/20 via-[#ff8800]/10 to-[#ffa500]/10">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-gray-200">
+      <header className="bg-white/80 backdrop-blur-xl border-b border-gray-200 sticky top-0 z-10">
         <div className="flex items-center justify-between px-8 py-4">
           <div className="flex items-center gap-8">
-            <div className="flex items-center gap-3">
+            <Link href="/dashboard" className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff006e] to-[#ff8800] flex items-center justify-center">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
               <h1 className="text-2xl font-bold text-gray-800">ARIA</h1>
-            </div>
-            <nav className="flex gap-1">
+            </Link>
+            <nav className="hidden md:flex gap-1">
               {navigation.map((item) => {
                 const isActive = pathname === item.href;
                 return (
@@ -52,10 +51,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <button className="px-4 py-2 bg-gradient-to-r from-[#ff006e] to-[#ff8800] text-white rounded-lg font-medium hover:shadow-lg transition-all">
               + New Interview
             </button>
-            <UserButton afterSignOutUrl="/" />
+            <UserProfile /> {/* <-- AQUÍ ESTÁ EL REEMPLAZO */}
           </div>
         </div>
-      </div>
+      </header>
       
       {/* Main Content */}
       <main className="p-8">
