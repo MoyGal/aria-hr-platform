@@ -1,17 +1,18 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-const isPublic = createRouteMatcher([
-  '/',
-  '/learn-more',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-]);
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  
+  const isPublicRoute = 
+    pathname === '/' ||
+    pathname === '/learn-more' ||
+    pathname.startsWith('/sign-in') ||
+    pathname.startsWith('/sign-up') ||
+    pathname.startsWith('/candidate/');
 
-export default clerkMiddleware(async (auth, req) => {
-  if (!isPublic(req)) {
-    await auth.protect();
-  }
-});
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
