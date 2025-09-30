@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "src/app/api/health/route.ts": {
+      "maxDuration": 10
+    },
+    "src/app/api/retell/register-call/route.ts": {
+      "maxDuration": 10
+    }
+  }
+}
