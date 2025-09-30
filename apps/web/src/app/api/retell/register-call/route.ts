@@ -36,4 +36,4 @@ export async function POST(request: NextRequest) {
 }
 
 // Necesario para App Router
-export const runtime = 'nodejs';
+export const runtime = 'edge';
