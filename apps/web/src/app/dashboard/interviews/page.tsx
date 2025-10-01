@@ -1,121 +1,278 @@
+// Nombre del archivo: apps/web/src/app/dashboard/interviews/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useAuth } from '@/components/providers/auth-provider';
+import { useEffect, useState } from 'react';
 import { RetellWebClient } from 'retell-client-js-sdk';
+import { Phone, PhoneOff, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+
+// Configuración de agentes disponibles
+const AGENTS = [
+  {
+    id: process.env.NEXT_PUBLIC_RETELL_AGENT_ID_SOPHIA_INTERVIEWER || '',
+    name: 'Sarah',
+    role: 'Technical Recruiter',
+    description: 'Specializes in technical interviews for software engineering roles',
+    avatar: '👩‍💼',
+    color: 'from-blue-500/20 to-blue-600/20',
+    borderColor: 'border-blue-500/30',
+  },
+  {
+    id: process.env.NEXT_PUBLIC_RETELL_AGENT_ID_JAMES_INTERVIEWER || '',
+    name: 'Michael',
+    role: 'Senior HR Manager',
+    description: 'Expert in behavioral and cultural fit assessments',
+    avatar: '👨‍💼',
+    color: 'from-purple-500/20 to-purple-600/20',
+    borderColor: 'border-purple-500/30',
+  },
+  {
+    id: process.env.NEXT_PUBLIC_RETELL_AGENT_ID_MARIA_INTERVIEWER || '',
+    name: 'María',
+    role: 'Leadership Interviewer',
+    description: 'Focuses on leadership potential and management skills',
+    avatar: '👩‍💻',
+    color: 'from-pink-500/20 to-pink-600/20',
+    borderColor: 'border-pink-500/30',
+  },
+];
 
 export default function InterviewsPage() {
-  const [selectedAgent, setSelectedAgent] = useState<{ id: string; name: string } | null>(null);
-  const [isCalling, setIsCalling] = useState(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const { user } = useAuth();
   const [retellClient, setRetellClient] = useState<RetellWebClient | null>(null);
+  const [isCallActive, setIsCallActive] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isSpeakerOn, setIsSpeakerOn] = useState(true);
+  const [selectedAgent, setSelectedAgent] = useState<string>('');
+  const [callStatus, setCallStatus] = useState<string>('');
 
-  const interviewers = [
-    { name: "Sarah Thompson", id: process.env.NEXT_PUBLIC_RETELL_AGENT_ID_SOPHIA_INTERVIEWER, gradient: "from-violet-600 to-purple-600", initial: "S", description: "Professional English interviewer." },
-    { name: "Michael Chen", id: process.env.NEXT_PUBLIC_RETELL_AGENT_ID_JAMES_INTERVIEWER, gradient: "from-blue-600 to-cyan-600", initial: "M", description: "Technical interviewer for engineering roles." },
-    { name: "Maria González", id: process.env.NEXT_PUBLIC_RETELL_AGENT_ID_MARIA_INTERVIEWER, gradient: "from-fuchsia-600 to-pink-600", initial: "M", description: "Bilingual interviewer (Spanish/English)." },
-  ];
+  // Inicializar Retell Client
+  useEffect(() => {
+    const client = new RetellWebClient();
+    setRetellClient(client);
 
-  const handleSelectInterviewer = (agentId: string, name: string) => {
-    setSelectedAgent({ id: agentId, name });
-    setShowConfirmationModal(true);
-  };
+    // Event listeners
+    client.on('call_started', () => {
+      setCallStatus('Call connected');
+      setIsCallActive(true);
+    });
 
-  const handleStartCall = async () => {
-    if (isCalling || !selectedAgent) return;
-    setIsCalling(true);
+    client.on('call_ended', () => {
+      setCallStatus('Call ended');
+      setIsCallActive(false);
+      setSelectedAgent('');
+    });
+
+    client.on('agent_start_talking', () => {
+      setCallStatus('Agent speaking...');
+    });
+
+    client.on('agent_stop_talking', () => {
+      setCallStatus('Listening...');
+    });
+
+    client.on('error', (error) => {
+      console.error('Retell error:', error);
+      setCallStatus(`Error: ${error.message}`);
+      setIsCallActive(false);
+    });
+
+    return () => {
+      if (client) {
+        client.stopCall();
+      }
+    };
+  }, []);
+
+  // Iniciar llamada
+  const startCall = async (agentId: string) => {
+    if (!retellClient || !user) return;
 
     try {
+      setCallStatus('Connecting...');
+      setSelectedAgent(agentId);
+
+      // Registrar la llamada con tu backend
       const response = await fetch('/api/retell/register-call', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ agentId: selectedAgent.id }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          agent_id: agentId,
+          user_id: user.uid,
+        }),
       });
 
-      if (!response.ok) throw new Error('Failed to register call');
+      if (!response.ok) {
+        throw new Error('Failed to register call');
+      }
 
       const { access_token } = await response.json();
-      setShowConfirmationModal(false);
 
-      const client = new RetellWebClient();
-      setRetellClient(client);
-
-      client.on('call_started', () => console.log("Call started"));
-      client.on('call_ended', () => {
-        setIsCalling(false);
-        setRetellClient(null);
-      });
-      client.on('error', (error) => {
-        console.error("Call error:", error);
-        setIsCalling(false);
+      // Iniciar la llamada con Retell - SIN enableUpdate
+      await retellClient.startCall({
+        accessToken: access_token,
+        sampleRate: 16000,
+        // enableUpdate: true, // ❌ REMOVIDO - no existe en el SDK actual
       });
 
-      await client.startCall({ accessToken: access_token });
-
+      setCallStatus('Call started successfully');
     } catch (error) {
-      console.error(error);
-      setIsCalling(false);
-      setShowConfirmationModal(false);
+      console.error('Error starting call:', error);
+      setCallStatus('Failed to start call');
+      setSelectedAgent('');
     }
   };
 
-  const handleEndCall = () => {
-    if (retellClient) retellClient.stopCall();
-    setIsCalling(false);
+  // Terminar llamada
+  const endCall = () => {
+    if (retellClient) {
+      retellClient.stopCall();
+      setIsCallActive(false);
+      setSelectedAgent('');
+      setCallStatus('');
+    }
+  };
+
+  // Toggle Mute
+  const toggleMute = () => {
+    if (retellClient && isCallActive) {
+      if (isMuted) {
+        retellClient.unmute();
+      } else {
+        retellClient.mute();
+      }
+      setIsMuted(!isMuted);
+    }
+  };
+
+  // Toggle Speaker (simulado - Retell maneja esto internamente)
+  const toggleSpeaker = () => {
+    setIsSpeakerOn(!isSpeakerOn);
   };
 
   return (
-    <div className="p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">AI Interviewers</h1>
-          <p className="text-white/70">Select your AI interview assistant</p>
-          {isCalling && (
-            <div className="mt-4 p-4 bg-green-600/20 border border-green-600/30 rounded-lg">
-              <p className="text-green-400 font-semibold">Interview in progress</p>
-              <button onClick={handleEndCall} className="mt-2 px-4 py-2 bg-red-600 rounded-lg text-white">
-                End Interview
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {interviewers.map((agent) => (
-            <div key={agent.name} className="group relative">
-              <div className={`absolute -inset-0.5 bg-gradient-to-r ${agent.gradient} rounded-2xl blur opacity-25`}></div>
-              <div className="relative h-full rounded-2xl bg-black/50 backdrop-blur-xl border border-white/10 p-6">
-                <div className={`w-16 h-16 bg-gradient-to-br ${agent.gradient} rounded-xl flex items-center justify-center mb-4`}>
-                  <span className="text-2xl font-bold text-white">{agent.initial}</span>
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">{agent.name}</h3>
-                <p className="text-white/70 text-sm mb-4">{agent.description}</p>
-                <button 
-                  onClick={() => handleSelectInterviewer(agent.id!, agent.name)}
-                  disabled={isCalling}
-                  className={`w-full py-2 bg-gradient-to-r ${agent.gradient} rounded-lg text-white font-semibold`}
-                >
-                  Start Interview
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="p-8 space-y-8">
+      {/* Header */}
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold text-white">AI Voice Interviews</h1>
+        <p className="text-gray-400">
+          Select an AI agent to conduct a voice interview with candidates
+        </p>
       </div>
 
-      {showConfirmationModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-black/90 border border-white/20 rounded-2xl p-8 max-w-md">
-            <h3 className="text-2xl font-bold text-white mb-4">Start Interview</h3>
-            <p className="text-white/70 mb-6">Ready to start interview with {selectedAgent?.name}?</p>
-            <div className="flex gap-3">
-              <button onClick={handleStartCall} className="flex-1 py-3 bg-violet-600 rounded-lg text-white">
-                Start
+      {/* Call Status */}
+      {isCallActive && (
+        <div className="glass-card p-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h3 className="text-xl font-semibold text-white">Call Active</h3>
+              <p className="text-gray-400">{callStatus}</p>
+            </div>
+            <div className="flex items-center gap-4">
+              {/* Mute Button */}
+              <button
+                onClick={toggleMute}
+                className={`p-4 rounded-full transition-all ${
+                  isMuted
+                    ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                    : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
+              >
+                {isMuted ? <MicOff size={24} /> : <Mic size={24} />}
               </button>
-              <button onClick={() => setShowConfirmationModal(false)} className="flex-1 py-3 bg-white/10 rounded-lg text-white">
-                Cancel
+
+              {/* Speaker Button */}
+              <button
+                onClick={toggleSpeaker}
+                className={`p-4 rounded-full transition-all ${
+                  !isSpeakerOn
+                    ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                    : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
+              >
+                {isSpeakerOn ? <Volume2 size={24} /> : <VolumeX size={24} />}
+              </button>
+
+              {/* End Call Button */}
+              <button
+                onClick={endCall}
+                className="px-6 py-4 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-all flex items-center gap-2"
+              >
+                <PhoneOff size={20} />
+                End Call
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* AI Agents Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {AGENTS.map((agent) => (
+          <div
+            key={agent.id}
+            className={`relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br ${agent.color} backdrop-blur-xl border ${agent.borderColor} transition-all duration-300 ${
+              selectedAgent === agent.id ? 'ring-4 ring-purple-500' : ''
+            } ${isCallActive && selectedAgent !== agent.id ? 'opacity-50' : 'hover:scale-105'}`}
+          >
+            {/* Avatar */}
+            <div className="text-6xl mb-4">{agent.avatar}</div>
+
+            {/* Info */}
+            <div className="space-y-2 mb-6">
+              <h3 className="text-2xl font-bold text-white">{agent.name}</h3>
+              <p className="text-sm font-medium text-purple-300">{agent.role}</p>
+              <p className="text-sm text-gray-400">{agent.description}</p>
+            </div>
+
+            {/* Action Button */}
+            {selectedAgent === agent.id && isCallActive ? (
+              <div className="flex items-center gap-2 text-green-400">
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="font-semibold">Active Call</span>
+              </div>
+            ) : (
+              <button
+                onClick={() => startCall(agent.id)}
+                disabled={isCallActive}
+                className={`w-full py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+                  isCallActive
+                    ? 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
+                    : 'bg-white/10 hover:bg-white/20 text-white'
+                }`}
+              >
+                <Phone size={20} />
+                Start Interview
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Instructions */}
+      {!isCallActive && (
+        <div className="glass-card p-6">
+          <h3 className="text-xl font-semibold text-white mb-4">How it works</h3>
+          <ul className="space-y-3 text-gray-300">
+            <li className="flex items-start gap-3">
+              <span className="text-purple-400 font-bold">1.</span>
+              <span>Select an AI agent based on the interview type you need</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-purple-400 font-bold">2.</span>
+              <span>Click "Start Interview" to begin a voice conversation</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-purple-400 font-bold">3.</span>
+              <span>The AI will conduct the interview naturally and evaluate responses</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-purple-400 font-bold">4.</span>
+              <span>Use the controls to mute/unmute or end the call when finished</span>
+            </li>
+          </ul>
         </div>
       )}
     </div>

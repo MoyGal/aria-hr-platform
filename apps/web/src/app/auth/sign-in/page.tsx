@@ -2,13 +2,18 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+// --- CAMBIO 1: AÑADIR NUEVOS IMPORTS ---
 import { 
   signInWithEmailAndPassword, 
   signInWithPopup,
   GoogleAuthProvider,
-  OAuthProvider 
+  OAuthProvider,
+  getAdditionalUserInfo, // Para saber si es un usuario nuevo
+  UserCredential
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase'; // Importamos 'db'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'; // Funciones de Firestore
+// --- FIN DEL CAMBIO 1 ---
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,6 +24,27 @@ export default function SignInPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // --- CAMBIO 2: AÑADIR LA FUNCIÓN SAVEUSERROLE ---
+  const saveUserRole = async (userCredential: UserCredential) => {
+    const additionalInfo = getAdditionalUserInfo(userCredential);
+    
+    // La clave: solo creamos el perfil si es un usuario nuevo
+    if (additionalInfo?.isNewUser) {
+      const user = userCredential.user;
+      const userDocRef = doc(db, 'users', user.uid);
+      await setDoc(userDocRef, {
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        role: 'company_user', // Rol por defecto para nuevos registros
+        createdAt: serverTimestamp(),
+        companyId: null,
+      }, { merge: true });
+      console.log(`New user profile created in Firestore for ${user.uid}`);
+    }
+  };
+  // --- FIN DEL CAMBIO 2 ---
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,38 +62,26 @@ export default function SignInPage() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  // --- CAMBIO 3: UNIFICAR Y MEJORAR LAS FUNCIONES DE GOOGLE/APPLE ---
+  const handleProviderSignIn = async (provider: GoogleAuthProvider | OAuthProvider) => {
     setError(null);
     setLoading(true);
-
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      // Después de iniciar sesión, llamamos a nuestra función para verificar si es nuevo
+      await saveUserRole(result); 
       router.push('/dashboard');
     } catch (err: any) {
-      console.error("Google Sign In Error:", err);
-      setError(err.message || "Failed to sign in with Google.");
+      console.error("Provider Sign In Error:", err);
+      setError(err.message || "Failed to sign in.");
     } finally {
       setLoading(false);
     }
   };
+  // --- FIN DEL CAMBIO 3 ---
+  
 
-  const handleAppleSignIn = async () => {
-    setError(null);
-    setLoading(true);
-
-    try {
-      const provider = new OAuthProvider('apple.com');
-      await signInWithPopup(auth, provider);
-      router.push('/dashboard');
-    } catch (err: any) {
-      console.error("Apple Sign In Error:", err);
-      setError(err.message || "Failed to sign in with Apple.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // ***** TU DISEÑO COMPLETO E INTACTO COMIENZA AQUÍ *****
   return (
     <main className="relative min-h-screen bg-black overflow-hidden flex items-center justify-center">
       {/* Background effects */}
@@ -103,7 +117,7 @@ export default function SignInPage() {
             {/* OAuth Buttons */}
             <div className="space-y-3 mb-6">
               <Button
-                onClick={handleGoogleSignIn}
+                onClick={() => handleProviderSignIn(new GoogleAuthProvider())}
                 disabled={loading}
                 className="w-full bg-white hover:bg-gray-100 text-gray-900 font-semibold py-6 rounded-xl transition-all duration-200 hover:scale-105"
                 variant="outline"
@@ -118,7 +132,7 @@ export default function SignInPage() {
               </Button>
 
               <Button
-                onClick={handleAppleSignIn}
+                onClick={() => handleProviderSignIn(new OAuthProvider('apple.com'))}
                 disabled={loading}
                 className="w-full bg-white hover:bg-gray-100 text-gray-900 font-semibold py-6 rounded-xl transition-all duration-200 hover:scale-105"
                 variant="outline"
@@ -188,7 +202,7 @@ export default function SignInPage() {
             {/* Sign up link */}
             <p className="mt-6 text-center text-sm text-white/60">
               Don't have an account?{' '}
-              <a href="/auth/sign-up" className="text-violet-400 hover:text-violet-300 font-semibold transition-colors">
+              <a href="/sign-up" className="text-violet-400 hover:text-violet-300 font-semibold transition-colors">
                 Sign up
               </a>
             </p>
