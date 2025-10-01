@@ -1,106 +1,178 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { Briefcase, Users, Calendar, Bot, FileText, UserPlus } from 'lucide-react';
+
 export default function DashboardPage() {
+  const router = useRouter();
+
   return (
-    <div>
+    <div className="p-8 space-y-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Dashboard Overview</h1>
-        <p className="text-gray-400">Welcome back! Here&apos;s what&apos;s happening with your recruitment pipeline.</p>
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+        <p className="text-gray-400">
+          Welcome back! Here's what's happening with your recruitment pipeline.
+        </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-3xl">💼</span>
-            <span className="text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded">+12%</span>
+      {/* Metrics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Open Positions */}
+        <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-blue-500/20 to-blue-600/20 backdrop-blur-xl border border-blue-500/30 hover:scale-105 transition-transform duration-300">
+          <div className="flex items-start justify-between mb-4">
+            <div className="p-3 bg-blue-500/20 rounded-xl">
+              <Briefcase className="w-6 h-6 text-blue-400" />
+            </div>
+            <span className="text-xs font-semibold text-blue-400 bg-blue-500/20 px-3 py-1 rounded-full">
+              +12%
+            </span>
           </div>
-          <div className="text-2xl font-bold text-white mb-1">24</div>
-          <div className="text-sm text-gray-400">Open Positions</div>
+          <div className="space-y-1">
+            <h3 className="text-4xl font-bold text-white">24</h3>
+            <p className="text-sm text-gray-400">Open Positions</p>
+          </div>
+          <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/20 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-3xl">👥</span>
-            <span className="text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded">+8%</span>
+        {/* Total Candidates */}
+        <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-green-500/20 to-emerald-600/20 backdrop-blur-xl border border-green-500/30 hover:scale-105 transition-transform duration-300">
+          <div className="flex items-start justify-between mb-4">
+            <div className="p-3 bg-green-500/20 rounded-xl">
+              <Users className="w-6 h-6 text-green-400" />
+            </div>
+            <span className="text-xs font-semibold text-green-400 bg-green-500/20 px-3 py-1 rounded-full">
+              +8%
+            </span>
           </div>
-          <div className="text-2xl font-bold text-white mb-1">156</div>
-          <div className="text-sm text-gray-400">Total Candidates</div>
+          <div className="space-y-1">
+            <h3 className="text-4xl font-bold text-white">156</h3>
+            <p className="text-sm text-gray-400">Total Candidates</p>
+          </div>
+          <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-green-500/10 rounded-full blur-2xl"></div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/20 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-3xl">🎙️</span>
-            <span className="text-xs text-purple-400 bg-purple-500/10 px-2 py-1 rounded">Today</span>
+        {/* Scheduled Interviews */}
+        <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-500/20 to-violet-600/20 backdrop-blur-xl border border-purple-500/30 hover:scale-105 transition-transform duration-300">
+          <div className="flex items-start justify-between mb-4">
+            <div className="p-3 bg-purple-500/20 rounded-xl">
+              <Calendar className="w-6 h-6 text-purple-400" />
+            </div>
+            <span className="text-xs font-semibold text-purple-400 bg-purple-500/20 px-3 py-1 rounded-full">
+              Today
+            </span>
           </div>
-          <div className="text-2xl font-bold text-white mb-1">8</div>
-          <div className="text-sm text-gray-400">Scheduled Interviews</div>
+          <div className="space-y-1">
+            <h3 className="text-4xl font-bold text-white">8</h3>
+            <p className="text-sm text-gray-400">Scheduled Interviews</p>
+          </div>
+          <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl"></div>
         </div>
 
-        <div className="bg-gradient-to-br from-amber-500/10 to-amber-600/10 border border-amber-500/20 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-3xl">🤖</span>
-            <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-1 rounded">Active</span>
+        {/* AI Agents */}
+        <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-orange-500/20 to-amber-600/20 backdrop-blur-xl border border-orange-500/30 hover:scale-105 transition-transform duration-300">
+          <div className="flex items-start justify-between mb-4">
+            <div className="p-3 bg-orange-500/20 rounded-xl">
+              <Bot className="w-6 h-6 text-orange-400" />
+            </div>
+            <span className="text-xs font-semibold text-orange-400 bg-orange-500/20 px-3 py-1 rounded-full">
+              Active
+            </span>
           </div>
-          <div className="text-2xl font-bold text-white mb-1">5</div>
-          <div className="text-sm text-gray-400">AI Agents</div>
+          <div className="space-y-1">
+            <h3 className="text-4xl font-bold text-white">3</h3>
+            <p className="text-sm text-gray-400">AI Agents</p>
+          </div>
+          <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl"></div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-black/30 backdrop-blur-xl rounded-2xl border border-white/10 p-6 mb-8">
-        <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
+      <div className="glass-card p-8">
+        <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="p-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl border border-white/10 hover:border-white/20 transition-all text-left">
-            <div className="text-2xl mb-2">📝</div>
-            <div className="text-white font-medium">Post New Job</div>
-            <div className="text-sm text-gray-400">Create a new job opening</div>
+          {/* Post New Job */}
+          <button 
+            onClick={() => router.push('/dashboard/jobs')}
+            className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-purple-500/30 to-violet-600/30 hover:from-purple-500/40 hover:to-violet-600/40 border border-purple-500/30 transition-all duration-300 text-left"
+          >
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/10 rounded-lg group-hover:scale-110 transition-transform">
+                <FileText className="w-6 h-6 text-purple-300" />
+              </div>
+              <span className="text-lg font-semibold text-white">Post New Job</span>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
           </button>
-          <button className="p-4 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl border border-white/10 hover:border-white/20 transition-all text-left">
-            <div className="text-2xl mb-2">🎙️</div>
-            <div className="text-white font-medium">Schedule Interview</div>
-            <div className="text-sm text-gray-400">Set up an AI interview</div>
+
+          {/* Schedule Interview */}
+          <button 
+            onClick={() => router.push('/dashboard/interviews')}
+            className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-green-500/30 to-emerald-600/30 hover:from-green-500/40 hover:to-emerald-600/40 border border-green-500/30 transition-all duration-300 text-left"
+          >
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/10 rounded-lg group-hover:scale-110 transition-transform">
+                <Calendar className="w-6 h-6 text-green-300" />
+              </div>
+              <span className="text-lg font-semibold text-white">Schedule Interview</span>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
           </button>
-          <button className="p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl border border-white/10 hover:border-white/20 transition-all text-left">
-            <div className="text-2xl mb-2">🤖</div>
-            <div className="text-white font-medium">Configure AI Agent</div>
-            <div className="text-sm text-gray-400">Create or edit agents</div>
+
+          {/* Configure AI Agent */}
+          <button 
+            onClick={() => router.push('/dashboard/interviews')}
+            className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-pink-500/30 to-rose-600/30 hover:from-pink-500/40 hover:to-rose-600/40 border border-pink-500/30 transition-all duration-300 text-left"
+          >
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/10 rounded-lg group-hover:scale-110 transition-transform">
+                <Bot className="w-6 h-6 text-pink-300" />
+              </div>
+              <span className="text-lg font-semibold text-white">Configure AI Agent</span>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
           </button>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-black/30 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">Recent Activity</h2>
-        <div className="space-y-3">
-          <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-              <span className="text-blue-400">📥</span>
+      <div className="glass-card p-8">
+        <h2 className="text-2xl font-bold text-white mb-6">Recent Activity</h2>
+        <div className="space-y-4">
+          {/* Activity Item 1 */}
+          <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10">
+            <div className="p-3 bg-blue-500/20 rounded-lg">
+              <UserPlus className="w-5 h-5 text-blue-400" />
             </div>
             <div className="flex-1">
-              <div className="text-white">New application received</div>
-              <div className="text-sm text-gray-400">John Doe applied for Senior Developer</div>
+              <p className="text-white font-medium">New application received</p>
+              <p className="text-sm text-gray-400">Sarah Johnson applied for Senior Developer</p>
             </div>
-            <div className="text-sm text-gray-500">2 min ago</div>
+            <span className="text-sm text-gray-500">2 min ago</span>
           </div>
-          <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-              <span className="text-green-400">✅</span>
+
+          {/* Activity Item 2 */}
+          <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10">
+            <div className="p-3 bg-green-500/20 rounded-lg">
+              <Calendar className="w-5 h-5 text-green-400" />
             </div>
             <div className="flex-1">
-              <div className="text-white">Interview completed</div>
-              <div className="text-sm text-gray-400">AI Agent finished interviewing Sarah Smith</div>
+              <p className="text-white font-medium">Interview completed</p>
+              <p className="text-sm text-gray-400">Michael Chen's interview for Senior UX Designer</p>
             </div>
-            <div className="text-sm text-gray-500">15 min ago</div>
+            <span className="text-sm text-gray-500">15 min ago</span>
           </div>
-          <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
-              <span className="text-purple-400">🤖</span>
+
+          {/* Activity Item 3 */}
+          <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10">
+            <div className="p-3 bg-purple-500/20 rounded-lg">
+              <Bot className="w-5 h-5 text-purple-400" />
             </div>
             <div className="flex-1">
-              <div className="text-white">New AI Agent created</div>
-              <div className="text-sm text-gray-400">Technical Interviewer agent is now active</div>
+              <p className="text-white font-medium">New AI Agent created</p>
+              <p className="text-sm text-gray-400">Maria - Technical Interviewer is now active</p>
             </div>
-            <div className="text-sm text-gray-500">1 hour ago</div>
+            <span className="text-sm text-gray-500">1 hour ago</span>
           </div>
         </div>
       </div>

@@ -1,168 +1,199 @@
-// Nombre del archivo: apps/web/src/app/dashboard/page.tsx
-import { Briefcase, Users, Calendar, Bot, FileText, UserPlus, Settings } from 'lucide-react';
+'use client';
 
-export default function DashboardPage() {
+import { useAuth } from '@/components/providers/auth-provider';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { LayoutDashboard, Briefcase, Calendar, LogOut, Menu, X, Shield } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { signOut } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userRole, setUserRole] = useState<string>('');
+  const [loadingRole, setLoadingRole] = useState(true);
+
+  // Obtener rol del usuario desde Firestore
+  useEffect(() => {
+    async function fetchUserRole() {
+      if (!user) return;
+      
+      try {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserRole(userData.role || 'user');
+        } else {
+          setUserRole('user');
+        }
+      } catch (error) {
+        console.error('Error fetching user role:', error);
+        setUserRole('user');
+      } finally {
+        setLoadingRole(false);
+      }
+    }
+
+    fetchUserRole();
+  }, [user]);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth/sign-in');
+    }
+  }, [user, loading, router]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
+        <div className="glass-card p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const navigation = [
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
+    { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
+  ];
+
+  // Mapeo de roles para mostrar
+  const roleDisplayNames: Record<string, string> = {
+    master_admin: 'Master Admin',
+    company_admin: 'Company Admin',
+    company_user: 'Company User',
+    candidate: 'Candidate',
+    user: 'User',
+  };
+
+  const roleColors: Record<string, string> = {
+    master_admin: 'text-red-400 bg-red-500/20',
+    company_admin: 'text-purple-400 bg-purple-500/20',
+    company_user: 'text-blue-400 bg-blue-500/20',
+    candidate: 'text-green-400 bg-green-500/20',
+    user: 'text-gray-400 bg-gray-500/20',
+  };
+
   return (
-    <div className="p-8 space-y-8">
-      {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-        <p className="text-gray-400">
-          Welcome back! Here's what's happening with your recruitment pipeline.
-        </p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 text-white"
+      >
+        {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
 
-      {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Open Positions */}
-        <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-blue-500/20 to-blue-600/20 backdrop-blur-xl border border-blue-500/30 hover:scale-105 transition-transform duration-300">
-          <div className="flex items-start justify-between mb-4">
-            <div className="p-3 bg-blue-500/20 rounded-xl">
-              <Briefcase className="w-6 h-6 text-blue-400" />
-            </div>
-            <span className="text-xs font-semibold text-blue-400 bg-blue-500/20 px-3 py-1 rounded-full">
-              +12%
-            </span>
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed top-0 left-0 z-40 h-screen w-64 
+          bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] 
+          border-r border-white/10 backdrop-blur-xl
+          transition-transform duration-300
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}
+      >
+        <div className="h-full flex flex-col p-6">
+          {/* Logo */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              ARIA
+            </h1>
+            <p className="text-xs text-gray-500 mt-1">HR Platform</p>
           </div>
-          <div className="space-y-1">
-            <h3 className="text-4xl font-bold text-white">24</h3>
-            <p className="text-sm text-gray-400">Open Positions</p>
-          </div>
-          <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
-        </div>
 
-        {/* Total Candidates */}
-        <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-green-500/20 to-emerald-600/20 backdrop-blur-xl border border-green-500/30 hover:scale-105 transition-transform duration-300">
-          <div className="flex items-start justify-between mb-4">
-            <div className="p-3 bg-green-500/20 rounded-xl">
-              <Users className="w-6 h-6 text-green-400" />
-            </div>
-            <span className="text-xs font-semibold text-green-400 bg-green-500/20 px-3 py-1 rounded-full">
-              +8%
-            </span>
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-4xl font-bold text-white">156</h3>
-            <p className="text-sm text-gray-400">Total Candidates</p>
-          </div>
-          <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-green-500/10 rounded-full blur-2xl"></div>
-        </div>
+          {/* Navigation */}
+          <nav className="flex-1 space-y-2">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+                    isActive 
+                      ? 'bg-purple-500/20 text-white border border-purple-500/30' 
+                      : 'text-gray-300 hover:text-white hover:bg-white/10'
+                  }`}
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <item.icon className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
+                  <span className="font-medium">{item.name}</span>
+                </Link>
+              );
+            })}
+          </nav>
 
-        {/* Scheduled Interviews */}
-        <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-500/20 to-violet-600/20 backdrop-blur-xl border border-purple-500/30 hover:scale-105 transition-transform duration-300">
-          <div className="flex items-start justify-between mb-4">
-            <div className="p-3 bg-purple-500/20 rounded-xl">
-              <Calendar className="w-6 h-6 text-purple-400" />
-            </div>
-            <span className="text-xs font-semibold text-purple-400 bg-purple-500/20 px-3 py-1 rounded-full">
-              Today
-            </span>
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-4xl font-bold text-white">8</h3>
-            <p className="text-sm text-gray-400">Scheduled Interviews</p>
-          </div>
-          <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl"></div>
-        </div>
-
-        {/* AI Agents */}
-        <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-orange-500/20 to-amber-600/20 backdrop-blur-xl border border-orange-500/30 hover:scale-105 transition-transform duration-300">
-          <div className="flex items-start justify-between mb-4">
-            <div className="p-3 bg-orange-500/20 rounded-xl">
-              <Bot className="w-6 h-6 text-orange-400" />
-            </div>
-            <span className="text-xs font-semibold text-orange-400 bg-orange-500/20 px-3 py-1 rounded-full">
-              Active
-            </span>
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-4xl font-bold text-white">3</h3>
-            <p className="text-sm text-gray-400">AI Agents</p>
-          </div>
-          <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl"></div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="glass-card p-8">
-        <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Post New Job */}
-          <button className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-purple-500/30 to-violet-600/30 hover:from-purple-500/40 hover:to-violet-600/40 border border-purple-500/30 transition-all duration-300 text-left">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/10 rounded-lg group-hover:scale-110 transition-transform">
-                <FileText className="w-6 h-6 text-purple-300" />
+          {/* User Profile */}
+          <div className="pt-6 border-t border-white/10">
+            {/* User Role Badge */}
+            {!loadingRole && userRole && (
+              <div className="mb-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                <Shield className="w-4 h-4 text-purple-400" />
+                <span className={`text-xs font-semibold px-2 py-1 rounded ${roleColors[userRole] || roleColors.user}`}>
+                  {roleDisplayNames[userRole] || 'User'}
+                </span>
               </div>
-              <span className="text-lg font-semibold text-white">Post New Job</span>
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-          </button>
+            )}
 
-          {/* Schedule Interview */}
-          <button className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-green-500/30 to-emerald-600/30 hover:from-green-500/40 hover:to-emerald-600/40 border border-green-500/30 transition-all duration-300 text-left">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/10 rounded-lg group-hover:scale-110 transition-transform">
-                <Calendar className="w-6 h-6 text-green-300" />
+            {/* User Info */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
               </div>
-              <span className="text-lg font-semibold text-white">Schedule Interview</span>
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-          </button>
-
-          {/* Configure AI Agent */}
-          <button className="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-pink-500/30 to-rose-600/30 hover:from-pink-500/40 hover:to-rose-600/40 border border-pink-500/30 transition-all duration-300 text-left">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/10 rounded-lg group-hover:scale-110 transition-transform">
-                <Bot className="w-6 h-6 text-pink-300" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">
+                  {user.displayName || 'User'}
+                </p>
+                <p className="text-xs text-gray-400 truncate">{user.email}</p>
               </div>
-              <span className="text-lg font-semibold text-white">Configure AI Agent</span>
             </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-          </button>
-        </div>
-      </div>
 
-      {/* Recent Activity */}
-      <div className="glass-card p-8">
-        <h2 className="text-2xl font-bold text-white mb-6">Recent Activity</h2>
-        <div className="space-y-4">
-          {/* Activity Item 1 */}
-          <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10">
-            <div className="p-3 bg-blue-500/20 rounded-lg">
-              <UserPlus className="w-5 h-5 text-blue-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-white font-medium">New application received</p>
-              <p className="text-sm text-gray-400">Sarah Johnson applied for Senior Developer</p>
-            </div>
-            <span className="text-sm text-gray-500">2 min ago</span>
-          </div>
-
-          {/* Activity Item 2 */}
-          <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10">
-            <div className="p-3 bg-green-500/20 rounded-lg">
-              <Calendar className="w-5 h-5 text-green-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-white font-medium">Interview completed</p>
-              <p className="text-sm text-gray-400">Michael Chen's interview for Senior UX Designer</p>
-            </div>
-            <span className="text-sm text-gray-500">15 min ago</span>
-          </div>
-
-          {/* Activity Item 3 */}
-          <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10">
-            <div className="p-3 bg-purple-500/20 rounded-lg">
-              <Bot className="w-5 h-5 text-purple-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-white font-medium">New AI Agent created</p>
-              <p className="text-sm text-gray-400">Maria - Technical Interviewer is now active</p>
-            </div>
-            <span className="text-sm text-gray-500">1 hour ago</span>
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white hover:bg-red-500/20 transition-all duration-300 group"
+            >
+              <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              <span className="font-medium">Logout</span>
+            </button>
           </div>
         </div>
+      </aside>
+
+      {/* Main Content */}
+      <div className="lg:pl-64">
+        <main className="min-h-screen">{children}</main>
       </div>
+
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-30"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 }
