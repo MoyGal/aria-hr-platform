@@ -1,6 +1,7 @@
-module.exports = {
-    plugins: {
-      '@tailwindcss/postcss': {},
-    },
-  };
-  
+// Nombre del archivo: apps/web/postcss.config.mjs
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
