@@ -1,4 +1,3 @@
-// Nombre del archivo: apps/web/src/app/dashboard/interviews/page.tsx
 'use client';
 
 import { useAuth } from '@/components/providers/auth-provider';
@@ -9,29 +8,32 @@ import { Phone, PhoneOff, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 // Configuración de agentes disponibles
 const AGENTS = [
   {
-    id: process.env.NEXT_PUBLIC_RETELL_AGENT_ID_SOPHIA_INTERVIEWER || '',
-    name: 'Sarah',
+    id: 'agent_ff61b85b817ff553f8172f900f',
+    name: 'Santiago',
     role: 'Technical Recruiter',
-    description: 'Specializes in technical interviews for software engineering roles',
-    avatar: '👩‍💼',
+    description: 'Especialista en entrevistas técnicas para roles de ingeniería',
+    avatar: '👨‍💼',
+    language: 'Español Latino',
     color: 'from-blue-500/20 to-blue-600/20',
     borderColor: 'border-blue-500/30',
   },
   {
-    id: process.env.NEXT_PUBLIC_RETELL_AGENT_ID_JAMES_INTERVIEWER || '',
-    name: 'Michael',
+    id: 'agent_293a2d80bfaf3d55a53097a715',
+    name: 'Sofia',
     role: 'Senior HR Manager',
-    description: 'Expert in behavioral and cultural fit assessments',
-    avatar: '👨‍💼',
+    description: 'Experta en evaluaciones de comportamiento y ajuste cultural',
+    avatar: '👩‍💼',
+    language: 'Multilingual',
     color: 'from-purple-500/20 to-purple-600/20',
     borderColor: 'border-purple-500/30',
   },
   {
-    id: process.env.NEXT_PUBLIC_RETELL_AGENT_ID_MARIA_INTERVIEWER || '',
-    name: 'María',
+    id: 'agent_5f6354a921aceeda71064691e9',
+    name: 'Jessica',
     role: 'Leadership Interviewer',
-    description: 'Focuses on leadership potential and management skills',
+    description: 'Se enfoca en potencial de liderazgo y habilidades de gestión',
     avatar: '👩‍💻',
+    language: 'Multilingual',
     color: 'from-pink-500/20 to-pink-600/20',
     borderColor: 'border-pink-500/30',
   },
@@ -46,12 +48,10 @@ export default function InterviewsPage() {
   const [selectedAgent, setSelectedAgent] = useState<string>('');
   const [callStatus, setCallStatus] = useState<string>('');
 
-  // Inicializar Retell Client
   useEffect(() => {
     const client = new RetellWebClient();
     setRetellClient(client);
 
-    // Event listeners
     client.on('call_started', () => {
       setCallStatus('Call connected');
       setIsCallActive(true);
@@ -84,7 +84,6 @@ export default function InterviewsPage() {
     };
   }, []);
 
-  // Iniciar llamada
   const startCall = async (agentId: string) => {
     if (!retellClient || !user) return;
 
@@ -92,7 +91,6 @@ export default function InterviewsPage() {
       setCallStatus('Connecting...');
       setSelectedAgent(agentId);
 
-      // Registrar la llamada con tu backend
       const response = await fetch('/api/retell/register-call', {
         method: 'POST',
         headers: {
@@ -110,11 +108,9 @@ export default function InterviewsPage() {
 
       const { access_token } = await response.json();
 
-      // Iniciar la llamada con Retell - SIN enableUpdate
       await retellClient.startCall({
         accessToken: access_token,
         sampleRate: 16000,
-        // enableUpdate: true, // ❌ REMOVIDO - no existe en el SDK actual
       });
 
       setCallStatus('Call started successfully');
@@ -125,7 +121,6 @@ export default function InterviewsPage() {
     }
   };
 
-  // Terminar llamada
   const endCall = () => {
     if (retellClient) {
       retellClient.stopCall();
@@ -135,7 +130,6 @@ export default function InterviewsPage() {
     }
   };
 
-  // Toggle Mute
   const toggleMute = () => {
     if (retellClient && isCallActive) {
       if (isMuted) {
@@ -147,14 +141,12 @@ export default function InterviewsPage() {
     }
   };
 
-  // Toggle Speaker (simulado - Retell maneja esto internamente)
   const toggleSpeaker = () => {
     setIsSpeakerOn(!isSpeakerOn);
   };
 
   return (
     <div className="p-8 space-y-8">
-      {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold text-white">AI Voice Interviews</h1>
         <p className="text-gray-400">
@@ -162,7 +154,6 @@ export default function InterviewsPage() {
         </p>
       </div>
 
-      {/* Call Status */}
       {isCallActive && (
         <div className="glass-card p-6">
           <div className="flex items-center justify-between">
@@ -171,7 +162,6 @@ export default function InterviewsPage() {
               <p className="text-gray-400">{callStatus}</p>
             </div>
             <div className="flex items-center gap-4">
-              {/* Mute Button */}
               <button
                 onClick={toggleMute}
                 className={`p-4 rounded-full transition-all ${
@@ -183,7 +173,6 @@ export default function InterviewsPage() {
                 {isMuted ? <MicOff size={24} /> : <Mic size={24} />}
               </button>
 
-              {/* Speaker Button */}
               <button
                 onClick={toggleSpeaker}
                 className={`p-4 rounded-full transition-all ${
@@ -195,7 +184,6 @@ export default function InterviewsPage() {
                 {isSpeakerOn ? <Volume2 size={24} /> : <VolumeX size={24} />}
               </button>
 
-              {/* End Call Button */}
               <button
                 onClick={endCall}
                 className="px-6 py-4 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-all flex items-center gap-2"
@@ -208,7 +196,6 @@ export default function InterviewsPage() {
         </div>
       )}
 
-      {/* AI Agents Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {AGENTS.map((agent) => (
           <div
@@ -217,17 +204,15 @@ export default function InterviewsPage() {
               selectedAgent === agent.id ? 'ring-4 ring-purple-500' : ''
             } ${isCallActive && selectedAgent !== agent.id ? 'opacity-50' : 'hover:scale-105'}`}
           >
-            {/* Avatar */}
             <div className="text-6xl mb-4">{agent.avatar}</div>
 
-            {/* Info */}
             <div className="space-y-2 mb-6">
               <h3 className="text-2xl font-bold text-white">{agent.name}</h3>
               <p className="text-sm font-medium text-purple-300">{agent.role}</p>
+              <p className="text-xs text-purple-200/80">{agent.language}</p>
               <p className="text-sm text-gray-400">{agent.description}</p>
             </div>
 
-            {/* Action Button */}
             {selectedAgent === agent.id && isCallActive ? (
               <div className="flex items-center gap-2 text-green-400">
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
@@ -251,7 +236,6 @@ export default function InterviewsPage() {
         ))}
       </div>
 
-      {/* Instructions */}
       {!isCallActive && (
         <div className="glass-card p-6">
           <h3 className="text-xl font-semibold text-white mb-4">How it works</h3>
