@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import Retell from 'retell-sdk';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,47 +24,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('Registering call for agent:', agentId);
+    console.log('Creating web call for agent:', agentId);
 
-    const response = await fetch('https://api.retellai.com/v2/create-web-call', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        agent_id: agentId,
-      }),
+    const client = new Retell({
+      apiKey: apiKey,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Retell API error:', errorText);
-      return NextResponse.json(
-        { error: 'Retell API request failed' },
-        { status: response.status }
-      );
-    }
+    const webCallResponse = await client.call.createWebCall({
+      agent_id: agentId,
+    });
 
-    const data = await response.json();
-    
-    if (!data.access_token) {
-      console.error('No access_token in response:', data);
-      return NextResponse.json(
-        { error: 'Invalid response from Retell API' },
-        { status: 500 }
-      );
-    }
+    console.log('Web call created successfully:', webCallResponse.call_id);
 
     return NextResponse.json({
-      access_token: data.access_token,
-      call_id: data.call_id,
+      access_token: webCallResponse.access_token,
+      call_id: webCallResponse.call_id,
     });
+
   } catch (error) {
-    console.error('Error registering call:', error);
+    console.error('Error creating web call:', error);
     return NextResponse.json(
-      { error: 'Failed to register call' },
+      { 
+        error: 'Failed to create web call',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
 }
+
+export const dynamic = 'force-dynamic';
