@@ -26,16 +26,21 @@ export default function DashboardLayout({
     async function fetchUserRole() {
       if (!user) return;
       
+      console.log('🔍 Fetching role for user:', user.uid);
+      
       try {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists()) {
           const userData = userDoc.data();
+          console.log('✅ User data loaded:', userData);
+          console.log('✅ Role is:', userData.role);
           setUserRole(userData.role || 'user');
         } else {
+          console.log('❌ User document does not exist');
           setUserRole('user');
         }
       } catch (error) {
-        console.error('Error fetching user role:', error);
+        console.error('❌ Error fetching user role:', error);
         setUserRole('user');
       } finally {
         setLoadingRole(false);
@@ -43,29 +48,6 @@ export default function DashboardLayout({
     }
 
     fetchUserRole();
-async function fetchUserRole() {
-  if (!user) return;
-  
-  console.log('🔍 Fetching role for user:', user.uid);
-  
-  try {
-    const userDoc = await getDoc(doc(db, 'users', user.uid));
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
-      console.log('✅ User data loaded:', userData);
-      console.log('✅ Role is:', userData.role);
-      setUserRole(userData.role || 'user');
-    } else {
-      console.log('❌ User document does not exist');
-      setUserRole('user');
-    }
-  } catch (error) {
-    console.error('❌ Error fetching user role:', error);
-    setUserRole('user');
-  } finally {
-    setLoadingRole(false);
-  }
-}
   }, [user]);
 
   useEffect(() => {
@@ -83,36 +65,17 @@ async function fetchUserRole() {
     }
   };
 
-  if (loading || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
-        <div className="glass-card p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-        </div>
-      </div>
-    );
-  }
-
-  // Recalculate navigation when userRole changes
-const navigationItems = useMemo(() => {
-  const baseNav = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
-    { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
-  ];
-  
-  if (userRole === 'master_admin') {
-    return [...baseNav, { name: 'Master Admin', href: '/dashboard/master', icon: Shield }];
-  }
-  return baseNav;
-}, [userRole]);
-
-  // Recalculate navigation when userRole changes
   const navigationItems = useMemo(() => {
+    const baseNav = [
+      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
+      { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
+    ];
+    
     if (userRole === 'master_admin') {
-      return [...navigation, { name: 'Master Admin', href: '/dashboard/master', icon: Shield }];
+      return [...baseNav, { name: 'Master Admin', href: '/dashboard/master', icon: Shield }];
     }
-    return navigation;
+    return baseNav;
   }, [userRole]);
 
   const roleDisplayNames: Record<string, string> = {
@@ -130,6 +93,16 @@ const navigationItems = useMemo(() => {
     candidate: 'text-green-400 bg-green-500/20',
     user: 'text-gray-400 bg-gray-500/20',
   };
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
+        <div className="glass-card p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
