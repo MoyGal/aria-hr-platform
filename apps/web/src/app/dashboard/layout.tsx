@@ -72,10 +72,15 @@ export default function DashboardLayout({
   }
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
-    { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
-  ];
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
+  { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
+];
+
+// Add Master Admin link if user is master_admin
+if (userRole === 'master_admin') {
+  navigation.push({ name: 'Master Admin', href: '/dashboard/master', icon: Shield });
+}
 
   // Mapeo de roles para mostrar
   const roleDisplayNames: Record<string, string> = {
