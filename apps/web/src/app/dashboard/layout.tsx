@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/components/providers/auth-provider';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { LayoutDashboard, Briefcase, Calendar, LogOut, Menu, X, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -22,7 +22,6 @@ export default function DashboardLayout({
   const [userRole, setUserRole] = useState<string>('');
   const [loadingRole, setLoadingRole] = useState(true);
 
-  // Obtener rol del usuario desde Firestore
   useEffect(() => {
     async function fetchUserRole() {
       if (!user) return;
@@ -71,19 +70,20 @@ export default function DashboardLayout({
     );
   }
 
-  // Build navigation array based on user role
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
-  { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
-];
+  const navigation = [
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
+    { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
+  ];
 
-// Add Master Admin link if user is master_admin
-const navigationItems = userRole === 'master_admin' 
-  ? [...navigation, { name: 'Master Admin', href: '/dashboard/master', icon: Shield }]
-  : navigation;
+  // Recalculate navigation when userRole changes
+  const navigationItems = useMemo(() => {
+    if (userRole === 'master_admin') {
+      return [...navigation, { name: 'Master Admin', href: '/dashboard/master', icon: Shield }];
+    }
+    return navigation;
+  }, [userRole]);
 
-  // Mapeo de roles para mostrar
   const roleDisplayNames: Record<string, string> = {
     master_admin: 'Master Admin',
     company_admin: 'Company Admin',
@@ -102,7 +102,6 @@ const navigationItems = userRole === 'master_admin'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
-      {/* Mobile Menu Button */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
         className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 text-white"
@@ -110,7 +109,6 @@ const navigationItems = userRole === 'master_admin'
         {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Sidebar */}
       <aside
         className={`
           fixed top-0 left-0 z-40 h-screen w-64 
@@ -121,7 +119,6 @@ const navigationItems = userRole === 'master_admin'
         `}
       >
         <div className="h-full flex flex-col p-6">
-          {/* Logo */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               ARIA
@@ -129,7 +126,6 @@ const navigationItems = userRole === 'master_admin'
             <p className="text-xs text-gray-500 mt-1">HR Platform</p>
           </div>
 
-          {/* Navigation */}
           <nav className="flex-1 space-y-2">
             {navigationItems.map((item) => {
               const isActive = pathname === item.href;
@@ -151,9 +147,7 @@ const navigationItems = userRole === 'master_admin'
             })}
           </nav>
 
-          {/* User Profile */}
           <div className="pt-6 border-t border-white/10">
-            {/* User Role Badge */}
             {!loadingRole && userRole && (
               <div className="mb-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
                 <Shield className="w-4 h-4 text-purple-400" />
@@ -163,7 +157,6 @@ const navigationItems = userRole === 'master_admin'
               </div>
             )}
 
-            {/* User Info */}
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
                 {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
@@ -176,7 +169,6 @@ const navigationItems = userRole === 'master_admin'
               </div>
             </div>
 
-            {/* Logout Button */}
             <button
               onClick={handleLogout}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white hover:bg-red-500/20 transition-all duration-300 group"
@@ -188,12 +180,10 @@ const navigationItems = userRole === 'master_admin'
         </div>
       </aside>
 
-      {/* Main Content */}
       <div className="lg:pl-64">
         <main className="min-h-screen">{children}</main>
       </div>
 
-      {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-30"
