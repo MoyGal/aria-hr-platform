@@ -43,6 +43,29 @@ export default function DashboardLayout({
     }
 
     fetchUserRole();
+async function fetchUserRole() {
+  if (!user) return;
+  
+  console.log('🔍 Fetching role for user:', user.uid);
+  
+  try {
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      console.log('✅ User data loaded:', userData);
+      console.log('✅ Role is:', userData.role);
+      setUserRole(userData.role || 'user');
+    } else {
+      console.log('❌ User document does not exist');
+      setUserRole('user');
+    }
+  } catch (error) {
+    console.error('❌ Error fetching user role:', error);
+    setUserRole('user');
+  } finally {
+    setLoadingRole(false);
+  }
+}
   }, [user]);
 
   useEffect(() => {
