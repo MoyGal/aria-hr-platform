@@ -41,7 +41,7 @@ export default function PublicInterviewPage() {
 
   async function startInterview() {
     try {
-      const agentId = process.env.NEXT_PUBLIC_RETELL_AGENT_ID_SOPHIA_INTERVIEWER;
+      const agentId = process.env.NEXT_PUBLIC_RETELL_DEFAULT_AGENT_ID;
       
       if (!agentId) {
         alert('Interview agent not configured');
