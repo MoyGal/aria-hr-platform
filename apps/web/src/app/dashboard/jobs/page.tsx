@@ -144,7 +144,10 @@ export default function JobsPage() {
               </div>
               <div className="pt-4 border-t border-white/10 flex items-center justify-between">
                 <div className="text-sm text-gray-400">0 applicants</div>
-                <button className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors">
+                <button 
+                  onClick={() => window.location.href = `/dashboard/jobs/${job.id}`}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors"
+                >
                   View Details
                 </button>
               </div>
