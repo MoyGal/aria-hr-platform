@@ -93,18 +93,18 @@ async function fetchUserRole() {
     );
   }
 
-  const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
-  { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
-];
-
-// Recalculate navigation when userRole changes
+  // Recalculate navigation when userRole changes
 const navigationItems = useMemo(() => {
+  const baseNav = [
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
+    { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
+  ];
+  
   if (userRole === 'master_admin') {
-    return [...navigation, { name: 'Master Admin', href: '/dashboard/master', icon: Shield }];
+    return [...baseNav, { name: 'Master Admin', href: '/dashboard/master', icon: Shield }];
   }
-  return navigation;
+  return baseNav;
 }, [userRole]);
 
   // Recalculate navigation when userRole changes
