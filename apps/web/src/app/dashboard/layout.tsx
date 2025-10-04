@@ -71,10 +71,18 @@ export default function DashboardLayout({
   }
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
-    { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
-  ];
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
+  { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
+];
+
+// Recalculate navigation when userRole changes
+const navigationItems = useMemo(() => {
+  if (userRole === 'master_admin') {
+    return [...navigation, { name: 'Master Admin', href: '/dashboard/master', icon: Shield }];
+  }
+  return navigation;
+}, [userRole]);
 
   // Recalculate navigation when userRole changes
   const navigationItems = useMemo(() => {
