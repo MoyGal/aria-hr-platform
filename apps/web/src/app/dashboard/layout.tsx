@@ -71,16 +71,17 @@ export default function DashboardLayout({
     );
   }
 
-  const navigation = [
+  // Build navigation array based on user role
+const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Jobs', href: '/dashboard/jobs', icon: Briefcase },
   { name: 'Interviews', href: '/dashboard/interviews', icon: Calendar },
 ];
 
 // Add Master Admin link if user is master_admin
-if (userRole === 'master_admin') {
-  navigation.push({ name: 'Master Admin', href: '/dashboard/master', icon: Shield });
-}
+const navigationItems = userRole === 'master_admin' 
+  ? [...navigation, { name: 'Master Admin', href: '/dashboard/master', icon: Shield }]
+  : navigation;
 
   // Mapeo de roles para mostrar
   const roleDisplayNames: Record<string, string> = {
@@ -130,7 +131,7 @@ if (userRole === 'master_admin') {
 
           {/* Navigation */}
           <nav className="flex-1 space-y-2">
-            {navigation.map((item) => {
+            {navigationItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
