@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await resend.emails.send({
       from: 'ARIA HR Platform <onboarding@resend.dev>',
       to: [candidateEmail],
-      subject: `${companyName || 'ARIA'} te invita a una entrevista - ${jobTitle}`,
+      subject: `${companyName || 'ARIA'} invites you to an interview - ${jobTitle}`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -32,39 +32,39 @@ export async function POST(request: NextRequest) {
             <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 40px auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
               <tr>
                 <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; text-align: center;">
-                  <h1 style="margin: 0; color: white; font-size: 28px; font-weight: 700;">🎯 Invitación a Entrevista</h1>
+                  <h1 style="margin: 0; color: white; font-size: 28px; font-weight: 700;">🎯 Interview Invitation</h1>
                 </td>
               </tr>
               <tr>
                 <td style="padding: 40px;">
                   <p style="margin: 0 0 20px; color: #374151; font-size: 16px; line-height: 1.6;">
-                    Hola <strong>${candidateName}</strong>,
+                    Hello <strong>${candidateName}</strong>,
                   </p>
                   <p style="margin: 0 0 20px; color: #374151; font-size: 16px; line-height: 1.6;">
-                    ${companyName || 'Nuestra empresa'} te invita a completar una entrevista de voz con inteligencia artificial para la posición de <strong>${jobTitle}</strong>.
+                    ${companyName || 'Our company'} invites you to complete a voice interview powered by artificial intelligence for the <strong>${jobTitle}</strong> position.
                   </p>
                   <p style="margin: 0 0 30px; color: #374151; font-size: 16px; line-height: 1.6;">
-                    La entrevista es completamente por voz y tomará aproximadamente 15-20 minutos. Puedes realizarla desde cualquier dispositivo con micrófono.
+                    The interview is completely voice-based and will take approximately 15-20 minutes. You can complete it from any device with a microphone.
                   </p>
                   <table width="100%" cellpadding="0" cellspacing="0">
                     <tr>
                       <td style="text-align: center; padding: 20px 0;">
                         <a href="${invitationLink}" style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);">
-                          Iniciar Entrevista
+                          Start Interview
                         </a>
                       </td>
                     </tr>
                   </table>
                   <p style="margin: 30px 0 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
-                    💡 <strong>Tip:</strong> Asegúrate de estar en un lugar tranquilo y con buena conexión a internet.
+                    💡 <strong>Tip:</strong> Make sure you're in a quiet place with a good internet connection.
                   </p>
                 </td>
               </tr>
               <tr>
                 <td style="padding: 20px 40px; background: #f9fafb; border-top: 1px solid #e5e7eb;">
                   <p style="margin: 0; color: #9ca3af; font-size: 12px; text-align: center;">
-                    Este es un email automático de ARIA HR Platform<br>
-                    Si no solicitaste esta entrevista, puedes ignorar este mensaje
+                    This is an automated email from ARIA HR Platform<br>
+                    If you didn't request this interview, you can ignore this message
                   </p>
                 </td>
               </tr>
